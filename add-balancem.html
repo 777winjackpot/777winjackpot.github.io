@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Balance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #222;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+    }
+
+    button#add {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    button#back {
+      background-color: #f44336;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Add Balance</h1>
+    <input type="number" id="amount" placeholder="Enter amount to add" />
+    <br>
+    <button id="add">Add Balance</button>
+    <button id="back">Back to Slot Machine</button>
+  </div>
+
+  <script>
+    document.getElementById("add").addEventListener("click", () => {
+      const amount = parseInt(document.getElementById("amount").value) || 0;
+      if (amount > 0) {
+        const currentBalance = parseInt(localStorage.getItem("balance")) || 0;
+        localStorage.setItem("balance", currentBalance + amount);
+        alert(`Added Php${amount} to your balance!`);
+      } else {
+        alert("Please enter a valid amount.");
+      }
+    });
+
+    document.getElementById("back").addEventListener("click", () => {
+      window.location.href = "slotm.html";
+    });
+  </script>
+</body>
+</html>

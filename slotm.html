@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slot Machine</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #222;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .slot-machine {
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      max-width: 90%;
+      background-image: url('777win.jpeg'); /* Background image */
+      background-size: cover;
+      background-position: center;
+    }
+
+    .reels {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .reel {
+      font-size: 40px;
+      margin: 5px;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .rolling-symbols {
+      position: absolute;
+      top: -100%;
+      animation: roll 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    }
+
+    @keyframes roll {
+      0% {
+        top: -100%;
+      }
+      100% {
+        top: 0%;
+      }
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    button#add-bet {
+      background-color: #4caf50;
+    }
+
+    button#spin {
+      background-color: #f44336;
+    }
+
+    button#add-balance {
+      background-color: #007bff;
+    }
+
+    .stats {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="slot-machine">
+    <h1>Slot Machine</h1>
+    <div class="reels">
+      <div class="reel" id="reel1">❓</div>
+      <div class="reel" id="reel2">❓</div>
+      <div class="reel" id="reel3">❓</div>
+      <div class="reel" id="reel4">❓</div>
+      <div class="reel" id="reel5">❓</div>
+      <div class="reel" id="reel6">❓</div>
+      <div class="reel" id="reel7">❓</div>
+      <div class="reel" id="reel8">❓</div>
+    </div>
+    <div class="buttons">
+      <button id="add-bet">Add Bet</button>
+      <button id="spin">Spin</button>
+      <button id="add-balance">Add Balance</button>
+    </div>
+    <div class="stats">
+      <h3 id="balance">Balance: Php100</h3>
+      <h3 id="bet">Current Bet: Php10</h3>
+    </div>
+  </div>
+
+  <audio id="spinSound" loop>
+    <source src="slot.mp3" type="audio/mp3">
+    Your browser does not support the audio tag.
+  </audio>
+
+  <script>
+    const symbols = ["🍒", "🍋", "🔔", "⭐", "🍉", "🍇", "💎"];
+    let balance = parseInt(localStorage.getItem("balance")) || 100; // Load saved balance or default to 100
+    let currentBet = 10;
+
+    const balanceDisplay = document.getElementById("balance");
+    const betDisplay = document.getElementById("bet");
+    const reels = [
+      document.getElementById("reel1"),
+      document.getElementById("reel2"),
+      document.getElementById("reel3"),
+      document.getElementById("reel4"),
+      document.getElementById("reel5"),
+      document.getElementById("reel6"),
+      document.getElementById("reel7"),
+      document.getElementById("reel8"),
+    ];
+
+    const spinSound = document.getElementById("spinSound");
+
+    // Update balance display
+    function updateBalanceDisplay() {
+      balanceDisplay.textContent = `Balance: Php${balance}`;
+      localStorage.setItem("balance", balance); // Save balance to localStorage
+    }
+
+    updateBalanceDisplay();
+
+    document.getElementById("add-bet").addEventListener("click", () => {
+      if (balance >= currentBet + 10) {
+        currentBet += 10;
+        betDisplay.textContent = `Current Bet: Php${currentBet}`;
+      }
+    });
+
+    document.getElementById("spin").addEventListener("click", () => {
+      if (balance < currentBet) {
+        alert("Insufficient balance to spin!");
+        return;
+      }
+
+      balance -= currentBet;
+      updateBalanceDisplay();
+
+      spinSound.currentTime = 0;
+      spinSound.play();
+
+      reels.forEach((reel, index) => {
+        reel.innerHTML = ""; // Clear previous symbols
+        const rollingDiv = document.createElement("div");
+        rollingDiv.className = "rolling-symbols";
+
+        for (let i = 0; i < 10; i++) { // Add 10 symbols for smooth animation
+          const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+          const span = document.createElement("div");
+          span.style.height = "60px";
+          span.style.lineHeight = "60px";
+          span.textContent = randomSymbol;
+          rollingDiv.appendChild(span);
+        }
+
+        reel.appendChild(rollingDiv);
+
+        setTimeout(() => {
+          const finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+          reel.innerHTML = `<div>${finalSymbol}</div>`;
+        }, 2000 + index * 200); // Staggered stop times for smooth roll
+      });
+
+      setTimeout(() => {
+        spinSound.pause();
+        const results = reels.map(reel => reel.textContent.trim());
+
+        if (new Set(results).size === 1) {
+          const symbol = results[0];
+          let message = "";
+          let change = 0;
+
+          switch (symbol) {
+            case "🍒": change = 10; message = "You Win!"; break;
+            case "🍋": change = 20; message = "You Win!"; break;
+            case "🔔": change = -30; message = "You Lose!"; break;
+            case "⭐": change = 40; message = "You Win!"; break;
+            case "🍉": change = -20; message = "You Lose!"; break;
+            case "🍇": change = 30; message = "You Win!"; break;
+            case "💎": change = 100; message = "Very Lucky!"; break;
+            case "🍓": change = 50; message = "Amazing Win!"; break;
+          }
+
+          balance += change;
+          updateBalanceDisplay();
+          alert(message);
+        }
+      }, 4000);
+    });
+
+    // Redirect to add balance page
+    document.getElementById("add-balance").addEventListener("click", () => {
+      window.location.href = "add-balancem.html";
+    });
+  </script>
+</body>
+</html>
