@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Balance</title>
+  <style>
+    body {
+      background-color: #1c1c1c;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+    .input-field {
+      padding: 10px;
+      margin: 10px;
+      width: 80%;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .submit-btn {
+      padding: 10px 20px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background-color: #5e00a6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Add Balance</h2>
+    <input type="number" id="balanceInput" class="input-field" placeholder="Enter amount" min="1" required>
+    <button class="submit-btn" onclick="addBalance()">Add Balance</button>
+  </div>
+
+  <script>
+    function addBalance() {
+      const balanceInput = document.getElementById('balanceInput').value;
+      if (!balanceInput || balanceInput <= 0) {
+        alert("Please enter a valid amount to add.");
+        return;
+      }
+      
+      // Retrieve current balance from localStorage or default to 10
+      let currentBalance = parseInt(localStorage.getItem('balance')) || 10;
+
+      // Add the input amount to the current balance
+      currentBalance += parseInt(balanceInput);
+
+      // Store updated balance in localStorage
+      localStorage.setItem('balance', currentBalance);
+
+      // Alert the user and redirect to the game page
+      alert(`₱${balanceInput} has been added!`);
+      window.location.href = 'indexmine.html';  // Redirect back to the game page
+    }
+  </script>
+
+</body>
+</html>
